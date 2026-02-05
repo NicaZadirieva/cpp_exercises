@@ -2,12 +2,12 @@
 //
 
 #include "scientific_project.h"
-#include "include/math_utils.h"
+#include "include/scientific_data.h"
 using namespace std;
 
 int main()
 {
 	cout << "Hello CMake." << endl;
-	entrypoint();
+
 	return 0;
 }
