@@ -2,9 +2,7 @@
 
 #include <iostream>
 #include <cmath>
-#include <string>
-#include <sstream>
-#include <vector>
+#include <map>
 #include <algorithm>
 
 // Главная функция - точка входа
