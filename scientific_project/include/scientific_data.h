@@ -5,6 +5,9 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <fstream>
+#include <ctime>
+#include <filesystem>
 
 // Реализуйте все методы.
 class ScientificData {
@@ -18,9 +21,9 @@ public:
 
     // Методы
     void addMeasurement(double value);
-    double mean() const;
+    double mediana() const;
     double stdDev() const;
-    void saveToFile(const std::string& filename) const;
+    void saveToFile() const;
 
     // Геттеры
     size_t size() const { return data.size(); }
