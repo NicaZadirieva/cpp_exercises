@@ -12,7 +12,7 @@ endif()
 project ("scientific_project")
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (scientific_project "scientific_project.cpp" "scientific_project.h")
+add_executable (scientific_project "scientific_project.cpp" "scientific_project.h" "src/main.cpp" "src/math_utils.cpp" "include/math_utils.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET scientific_project PROPERTY CXX_STANDARD 20)
