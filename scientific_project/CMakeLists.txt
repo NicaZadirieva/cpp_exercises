@@ -29,7 +29,7 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 add_executable(scientific_project 
     ${SRC_DIR}/main.cpp 
     ${SRC_DIR}/math_utils.cpp 
-    ${SRC_DIR}/matrix.cpp
+    
 )
 
 # Подключаем заголовочные файлы
@@ -41,8 +41,8 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_matrix.cpp)
     
     # Тесты для Matrix
     add_executable(matrix_tests
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_matrix.cpp
-        ${SRC_DIR}/matrix.cpp
+        
+        
     )
     
     # Подключаем заголовочные файлы для тестов
