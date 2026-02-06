@@ -1,21 +1,18 @@
 ﻿// scientific_project.cpp: определяет точку входа для приложения.
-//
+
 
 #include "scientific_project.h"
-#include "include/scientific_data.h"
+#include "include/statistics.h"
 using namespace std;
+
+void print_vector(vector<double>& v) {
+	copy(v.begin(), v.end(), ostream_iterator<double>(cout, " "));
+}
 
 int main()
 {
-	cout << "Hello CMake." << endl;
-	ScientificData* scientificData = new ScientificData("power", "Vt");
-	scientificData->addMeasurement(3.5);
-	scientificData->addMeasurement(4.5);
-	scientificData->addMeasurement(5.5);
-	scientificData->addMeasurement(6.5);
-	scientificData->addMeasurement(7.5);
-	scientificData->addMeasurement(8.5);
-
-	scientificData->saveToFile();
+	// Тест 1: vector<double>
+	std::vector<double> double_data = { 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5 };
+	testAndPrintStats(double_data, "vector<double>");
 	return 0;
 }
