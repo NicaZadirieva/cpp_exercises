@@ -2,7 +2,7 @@
 
 
 #include "scientific_project.h"
-
+#include "simple_gnuplot.h"
 
 using namespace std;
 
@@ -31,5 +31,7 @@ int main() {
     cout << endl << "ys: " << endl;
     copy(ys.begin(), ys.end(), ostream_iterator<double>(cout, " "));
     cout << endl << endl;
+
+    SimpleGnuplot::plot_data(xs, ys);
     return 0;
 }
