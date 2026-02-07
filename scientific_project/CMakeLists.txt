@@ -22,7 +22,7 @@ foreach(source ${SOURCES})
 endforeach()
 
 # Создаем исполняемый файл
-add_executable(${PROJECT_NAME} ${SOURCES}   "include/histogram.h" "src/histogram.cpp" "include/gnuplot_histogram.h" "src/gnuplot_histogram.cpp")
+add_executable(${PROJECT_NAME} ${SOURCES}   "include/histogram.h" "src/histogram.cpp" "include/simple_gnuplot.h" )
 
 # Заголовочные файлы
 target_include_directories(${PROJECT_NAME} PRIVATE include)

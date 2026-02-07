@@ -1,6 +1,6 @@
 ﻿#define _USE_MATH_DEFINES
 #include "include/histogram.h"
-#include "include/gnuplot_histogram.h"
+#include "include/simple_gnuplot.h"
 #include <iostream>
 #include <random>
 #include <fstream>
@@ -90,8 +90,26 @@ void example_normal_distribution() {
     // Сохранение в CSV
     hist.save_to_csv("normal_distribution.csv");
 
-    // Построение графиков через GNUplot
-    GnuplotHistogram::plot(hist, "Normal Distribution (N=10000)");
+    // Альтернатива 1: Простой gnuplot
+    std::cout << "\nGenerating plot with gnuplot...\n";
+
+    // Сначала проверяем доступность gnuplot
+    int check = std::system("gnuplot --version > nul 2>&1");
+    if (check == 0) {
+        // Используем упрощенную версию
+        if (SimpleGnuplot::plot_histogram(hist.bins(),
+            std::vector<double>(hist.bins().begin() + 1, hist.bins().end()),
+            hist.frequencies(),
+            "Normal Distribution")) {
+            std::cout << "✅ Plot generated successfully!\n";
+        }
+    }
+    else {
+        std::cout << "⚠️  Gnuplot not found. Plot generation skipped.\n";
+        std::cout << "   You can install gnuplot or view the CSV file in Excel.\n";
+    }
+
+
 }
 
 void example_temperature_data() {
