@@ -22,7 +22,7 @@ foreach(source ${SOURCES})
 endforeach()
 
 # Создаем исполняемый файл
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} "include/scientific_dataset.h" "src/scientific_dataset.cpp")
 
 # Заголовочные файлы
 target_include_directories(${PROJECT_NAME} PRIVATE include)
