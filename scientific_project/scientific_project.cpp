@@ -19,23 +19,6 @@ string removeBOM(const string& str) {
 }
 
 int main() {
-    ScientificFile file("data/test.csv", ios::in);
-    vector<double> numbers = {};
-    bool firstLine = true;
-    while (!file.eof()) {
-        string line = file.read_line();
-        if (firstLine) {
-            line = removeBOM(line);
-            firstLine = false;
-        }
-        stringstream s(line);
-
-        string num;
-
-        while (getline(s, num, ',')) {
-            numbers.push_back(stod(num));
-        }
-    }
-    copy(numbers.begin(), numbers.end(), ostream_iterator<double>(cout, " "));
+    cout << "Hello" << endl;
     return 0;
 }

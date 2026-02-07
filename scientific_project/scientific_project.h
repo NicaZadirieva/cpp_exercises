@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "include/scientific_file.h"
 #include <iostream>
 #include <string>
 #include <sstream>
