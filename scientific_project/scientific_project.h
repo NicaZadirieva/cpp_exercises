@@ -3,7 +3,7 @@
 
 #pragma once
 
+#include "include/scientific_file.h"
 #include <iostream>
-#include <random>
-
-// TODO: установите здесь ссылки на дополнительные заголовки, требующиеся для программы.
+#include <string>
+#include <sstream>

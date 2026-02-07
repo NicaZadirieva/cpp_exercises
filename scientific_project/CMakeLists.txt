@@ -1,19 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.15)
 project(scientific_project VERSION 1.0.0 LANGUAGES CXX)
 
-# Включаем FetchContent для загрузки Eigen
-include(FetchContent)
-
-# Скачиваем Eigen
-FetchContent_Declare(
-  eigen
-  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
-  GIT_TAG 3.4.0
-)
-
-# Делаем доступным
-FetchContent_MakeAvailable(eigen)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -25,6 +12,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Проверяем существование исходных файлов
 set(SOURCES
+    src/scientific_file.cpp
     scientific_project.cpp
 )
 
@@ -35,13 +23,8 @@ foreach(source ${SOURCES})
 endforeach()
 
 # Создаем исполняемый файл
-add_executable(${PROJECT_NAME} ${SOURCES}   "include/histogram.h" "src/histogram.cpp" "include/simple_gnuplot.h" )
+add_executable(${PROJECT_NAME} ${SOURCES}   "include/simple_gnuplot.h"  "include/scientific_file.h" "src/scientific_file.cpp" "src/simple_gnuplot.cpp")
 
-# Подключаем Eigen
-target_include_directories(scientific_project PRIVATE 
-    ${eigen_SOURCE_DIR}
-    include
-)
 # Заголовочные файлы
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
@@ -52,4 +35,16 @@ if(MSVC)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)  # Убран -Werror
     target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+# Копирование файлов данных после сборки
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/data)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/data/function_points.csv
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data/
+        COMMENT "Копирование файла данных"
+        VERBATIM
+    )
 endif()
