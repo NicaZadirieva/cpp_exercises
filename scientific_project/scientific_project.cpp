@@ -6,23 +6,27 @@
 
 using namespace std;
 
-double calculate_delta_x(vector<double> &xs,
-    vector<double> &ys) {
-    double delta_x = xs[1] - xs[0];
-    double delta_y = ys[1] - ys[0];
-    double epsilon = 0.1;
-    bool found = false;
-    while (!found) {
-        for (int i = 1; i < xs.size() - 1; i++) {
-            if (abs((ys[i + 1] - ys[i]) / delta_x - delta_y) > epsilon) {
-                delta_x = xs[i + 1] - xs[i];
-                break;
-            }
-        }
-        found = true;
+
+vector<double> calculate_derivative(const vector<double>& xs, const vector<double>& ys) {
+    size_t n = xs.size();
+    vector<double> derivative(n);
+
+    if (n < 2) return derivative;
+
+    // Первая точка: правосторонняя разность
+    derivative[0] = (ys[1] - ys[0]) / (xs[1] - xs[0]);
+
+    // Внутренние точки: центральная разность (более точная)
+    for (size_t i = 1; i < n - 1; i++) {
+        derivative[i] = (ys[i + 1] - ys[i - 1]) / (xs[i + 1] - xs[i - 1]);
     }
-    return delta_x;
+
+    // Последняя точка: левосторонняя разность
+    derivative[n - 1] = (ys[n - 1] - ys[n - 2]) / (xs[n - 1] - xs[n - 2]);
+
+    return derivative;
 }
+
 
 
 
@@ -53,17 +57,12 @@ int main() {
 
     SimpleGnuplot::plot_data(xs, ys, "fx");
 
-    auto delta_x = calculate_delta_x(xs, ys);
-    vector<double> dxs = vector<double>(xs.size());
-    vector<double> dys = vector<double>(ys.size());
-    for (int i = 0; i < xs.size() - 1; i++) {
-        dxs.push_back(xs[i + 1]);
-        dys.push_back((ys[i + 1] - ys[i]) / delta_x);
-    }
-    cout << endl << "dys: " << endl;
+
+    vector<double> dys = calculate_derivative(xs, ys);
+
     copy(dys.begin(), dys.end(), ostream_iterator<double>(cout, " "));
 
 
-    SimpleGnuplot::plot_data(dxs, dys, "dfx");
+    SimpleGnuplot::plot_data(xs, dys, "dfx");
     return 0;
 }
