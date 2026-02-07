@@ -4,8 +4,11 @@
 #pragma once
 
 #include <iostream>
-#include <algorithm>
+#include <string>
+#include <sstream>
 #include <vector>
-#include <numeric>
+#include <iterator>  // Добавлено для std::ostream_iterator
+#include <codecvt>
+#include <locale>
 
 // TODO: установите здесь ссылки на дополнительные заголовки, требующиеся для программы.
