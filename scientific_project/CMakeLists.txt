@@ -1,6 +1,19 @@
 ﻿cmake_minimum_required(VERSION 3.15)
 project(scientific_project VERSION 1.0.0 LANGUAGES CXX)
 
+# Включаем FetchContent для загрузки Eigen
+include(FetchContent)
+
+# Скачиваем Eigen
+FetchContent_Declare(
+  eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG 3.4.0
+)
+
+# Делаем доступным
+FetchContent_MakeAvailable(eigen)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -24,6 +37,11 @@ endforeach()
 # Создаем исполняемый файл
 add_executable(${PROJECT_NAME} ${SOURCES}   "include/histogram.h" "src/histogram.cpp" "include/simple_gnuplot.h" )
 
+# Подключаем Eigen
+target_include_directories(scientific_project PRIVATE 
+    ${eigen_SOURCE_DIR}
+    include
+)
 # Заголовочные файлы
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
