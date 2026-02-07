@@ -32,6 +32,8 @@ int main() {
     copy(ys.begin(), ys.end(), ostream_iterator<double>(cout, " "));
     cout << endl << endl;
 
-    SimpleGnuplot::plot_data(xs, ys);
+    SimpleGnuplot::plot_data(xs, ys, "fx");
+
+
     return 0;
 }
