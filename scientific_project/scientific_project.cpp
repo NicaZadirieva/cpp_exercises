@@ -1,33 +1,68 @@
-﻿#include <iostream>
-#include <Eigen/Dense>
+﻿// scientific_project.cpp: определяет точку входа для приложения.
+
+
+#include "scientific_project.h"
+#include "simple_gnuplot.h"
+
+using namespace std;
+
+
+vector<double> calculate_derivative(const vector<double>& xs, const vector<double>& ys) {
+    size_t n = xs.size();
+    vector<double> derivative(n);
+
+    if (n < 2) return derivative;
+
+    // Первая точка: правосторонняя разность
+    derivative[0] = (ys[1] - ys[0]) / (xs[1] - xs[0]);
+
+    // Внутренние точки: центральная разность (более точная)
+    for (size_t i = 1; i < n - 1; i++) {
+        derivative[i] = (ys[i + 1] - ys[i - 1]) / (xs[i + 1] - xs[i - 1]);
+    }
+
+    // Последняя точка: левосторонняя разность
+    derivative[n - 1] = (ys[n - 1] - ys[n - 2]) / (xs[n - 1] - xs[n - 2]);
+
+    return derivative;
+}
+
+
+
 
 int main() {
-    std::cout << "=== Eigen Test ===\n\n";
+    ScientificFile file("data/function_points.csv", ios::in);
+    vector<double> xs = {};
+    vector<double> ys = {};
+    file.read_line();
+    while (!file.eof()) {
+        string line = file.read_line();
 
-    // 1. Создание матриц
-    Eigen::MatrixXd A(2, 2);
-    A << 1, 2,
-        3, 4;
+        stringstream s(line);
 
-    Eigen::VectorXd b(2);
-    b << 5, 6;
+        string x, y;
+        getline(s, x, ',');
+        getline(s, y, ',');
 
-    std::cout << "Matrix A:\n" << A << "\n\n";
-    std::cout << "Vector b:\n" << b << "\n\n";
+        xs.push_back(stod(x));
+        ys.push_back(stod(y));
+    
+    }
+    cout << endl << endl;
+    cout << "xs: " << endl;
+    copy(xs.begin(), xs.end(), ostream_iterator<double>(cout, " "));
+    cout << endl << "ys: " << endl;
+    copy(ys.begin(), ys.end(), ostream_iterator<double>(cout, " "));
+    cout << endl << endl;
 
-    // 2. Решение системы уравнений
-    Eigen::VectorXd x = A.colPivHouseholderQr().solve(b);
-    std::cout << "Solution x = A\\b:\n" << x << "\n\n";
+    SimpleGnuplot::plot_data(xs, ys, "fx");
 
-    // 3. Проверка
-    std::cout << "Check A*x:\n" << A * x << "\n";
-    std::cout << "Expected b:\n" << b << "\n\n";
 
-    // 4. Другие операции
-    std::cout << "A^T:\n" << A.transpose() << "\n\n";
-    std::cout << "A*A:\n" << A * A << "\n\n";
-    std::cout << "Determinant of A: " << A.determinant() << "\n";
-    std::cout << "Inverse of A:\n" << A.inverse() << "\n";
+    vector<double> dys = calculate_derivative(xs, ys);
 
+    copy(dys.begin(), dys.end(), ostream_iterator<double>(cout, " "));
+
+
+    SimpleGnuplot::plot_data(xs, dys, "dfx");
     return 0;
 }

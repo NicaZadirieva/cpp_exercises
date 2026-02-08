@@ -79,7 +79,7 @@ public:
 
         std::ofstream script("script.gnu");
         script << "set terminal png\n";
-        script << "set output 'plot.png'\n";
+        script << "set output '" << title << ".png'\n";
         script << "set title '" << title << "'\n";
         script << "set xlabel '" << xlabel << "'\n";
         script << "set ylabel '" << ylabel << "'\n";
