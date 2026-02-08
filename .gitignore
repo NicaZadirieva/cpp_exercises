@@ -41,3 +41,4 @@
 *.dwo
 scientific_project/.vs
 scientific_project/out
+/scientific_project/data/raw.csv

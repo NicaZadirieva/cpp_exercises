@@ -42,7 +42,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/data)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/data/function_points.csv
+            ${CMAKE_CURRENT_SOURCE_DIR}/data/raw.csv
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data/
         COMMENT "Копирование файла данных"
         VERBATIM
