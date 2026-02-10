@@ -47,7 +47,55 @@ string replace(string s,
 }
 
 
+pair<vector<double>, vector<double>> calculate_middle_points(const vector<double>& xs, const vector<double>& ys, int calc_delta = 3) {
+    if (xs.empty() || ys.empty() || xs.size() != ys.size()) {
+        return make_pair(vector<double>(), vector<double>());
+    }
+
+    vector<double> new_xs;
+    vector<double> new_ys;
+    int n = xs.size();
+
+    // Обрабатываем первую точку (симметричное усреднение)
+    
+    if (n >= 2) {
+        new_xs.push_back((xs[0] + xs[1]) / 2.0);
+        new_ys.push_back((ys[0] + ys[1]) / 2.0);
+    }
+    else {
+        new_xs.push_back(xs[0]);
+        new_ys.push_back(ys[0]);
+    }
+
+    // Обрабатываем промежуточные точки
+    for (int i = 1; i < n - 1; i++) {
+        
+        // Определяем границы окна усреднения
+        int left = max(0, i - calc_delta / 2);
+        int right = min(n - 1, i + calc_delta / 2);
+        int count = right - left + 1;
+
+        double sumy = 0.0;
+        double sumx = 0.0;
+        for (int j = left; j <= right; j++) {
+            sumy += ys[j];
+            sumx += xs[j];
+        }
+        new_xs.push_back(sumx / count);
+        new_ys.push_back(sumy / count);
+    }
+
+    // Обрабатываем последнюю точку
+    if (n > 1) {
+        new_xs.push_back((xs[n - 1] + xs[n - 2]) / 2.0);
+        new_ys.push_back((ys[n - 1] + ys[n - 2]) / 2.0);
+    }
+
+    return make_pair(new_xs, new_ys);
+}
+
 int main() {
+    // raw data
     ScientificFile file("data/raw.csv", ios::in);
     vector<double> xs = {};
     vector<double> ys = {};
@@ -72,8 +120,17 @@ int main() {
 
 
     vector<double> dys = calculate_derivative(xs, ys);
-
     SimpleGnuplot::plot_data(xs, dys, "dfx");
+
+    // after deleting points
+    auto [temp_x_del_points, temp_y_del_points] = calculate_middle_points(xs, ys, 600);
+    auto [temp_x_del_points2, temp_y_del_points2] = calculate_middle_points(temp_x_del_points, temp_y_del_points, 600);
+    auto [x_del_points, y_del_points] = calculate_middle_points(temp_x_del_points2, temp_y_del_points2, 600);
+
+    SimpleGnuplot::plot_data(x_del_points, y_del_points, "delfx");
+    vector<double> del_dys = calculate_derivative(x_del_points, y_del_points);
+    SimpleGnuplot::plot_data(x_del_points, del_dys, "deldfx");
+    // processed file via origin
     vector<double> processed_xs = {};
     vector<double> processed_ys = {};
     vector<double> processed_dys = {};
@@ -99,5 +156,7 @@ int main() {
     }
     SimpleGnuplot::plot_data(processed_xs, processed_ys, "fx2");
     SimpleGnuplot::plot_data(processed_xs, processed_dys, "dfx2");
+
+
     return 0;
 }
