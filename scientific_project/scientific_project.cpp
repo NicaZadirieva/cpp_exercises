@@ -53,9 +53,7 @@ int main() {
     vector<double> ys = {};
     file.read_line();
     file.read_line();
-    int number_line = 2;
     while (!file.eof()) {
-        number_line++;
         string line = file.read_line();
 
         stringstream s(line);
@@ -65,28 +63,41 @@ int main() {
         getline(s, y, ';');
         x = replace(x, ',', '.');
         y = replace(y, ',', '.');
-        cout << "x" << x << endl;
-        cout << "y" << y << endl;
-        cout << "number_line" << number_line << endl;
         xs.push_back(stod(x));
         ys.push_back(stod(y));
 
     }
-    cout << endl << endl;
-    cout << "xs: " << endl;
-    copy(xs.begin(), xs.end(), ostream_iterator<double>(cout, " "));
-    cout << endl << "ys: " << endl;
-    copy(ys.begin(), ys.end(), ostream_iterator<double>(cout, " "));
-    cout << endl << endl;
 
     SimpleGnuplot::plot_data(xs, ys, "fx");
 
 
     vector<double> dys = calculate_derivative(xs, ys);
 
-    copy(dys.begin(), dys.end(), ostream_iterator<double>(cout, " "));
-
-
     SimpleGnuplot::plot_data(xs, dys, "dfx");
+    vector<double> processed_xs = {};
+    vector<double> processed_ys = {};
+    vector<double> processed_dys = {};
+    ScientificFile processed_file("data/processed.csv", ios::in);
+    processed_file.read_line();
+    while (!processed_file.eof()) {
+        string line = processed_file.read_line();
+
+        stringstream s(line);
+
+        string x, y, dys;
+        getline(s, x, ';');
+        getline(s, y, ';');
+        getline(s, dys, ';');
+        x = replace(x, ',', '.');
+        y = replace(y, ',', '.');
+        dys = replace(dys, ',', '.');
+
+        processed_xs.push_back(stod(x));
+        processed_ys.push_back(stod(y));
+        processed_dys.push_back(stod(dys));
+
+    }
+    SimpleGnuplot::plot_data(processed_xs, processed_ys, "fx2");
+    SimpleGnuplot::plot_data(processed_xs, processed_dys, "dfx2");
     return 0;
 }

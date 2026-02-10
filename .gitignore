@@ -42,3 +42,4 @@
 scientific_project/.vs
 scientific_project/out
 /scientific_project/data/raw.csv
+/scientific_project/data/processed.csv
