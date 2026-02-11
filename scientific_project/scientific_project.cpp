@@ -47,7 +47,7 @@ string replace(string s,
 }
 
 
-pair<vector<double>, vector<double>> calculate_middle_points(const vector<double>& xs, const vector<double>& ys, int calc_delta = 3) {
+pair<vector<double>, vector<double>> calculate_middle_points(const vector<double>& xs, const vector<double>& ys, int window_size = 3) {
     if (xs.empty() || ys.empty() || xs.size() != ys.size()) {
         return make_pair(vector<double>(), vector<double>());
     }
@@ -56,39 +56,27 @@ pair<vector<double>, vector<double>> calculate_middle_points(const vector<double
     vector<double> new_ys;
     int n = xs.size();
 
-    // Обрабатываем первую точку (симметричное усреднение)
-    
-    if (n >= 2) {
-        new_xs.push_back((xs[0] + xs[1]) / 2.0);
-        new_ys.push_back((ys[0] + ys[1]) / 2.0);
-    }
-    else {
-        new_xs.push_back(xs[0]);
-        new_ys.push_back(ys[0]);
-    }
-
-    // Обрабатываем промежуточные точки
-    for (int i = 1; i < n - 1; i++) {
-        
-        // Определяем границы окна усреднения
-        int left = max(0, i - calc_delta / 2);
-        int right = min(n - 1, i + calc_delta / 2);
-        int count = right - left + 1;
-
-        double sumy = 0.0;
-        double sumx = 0.0;
-        for (int j = left; j <= right; j++) {
-            sumy += ys[j];
-            sumx += xs[j];
+    for (int i = 0; i < n; i++) {
+        int left, right;
+        if (i - window_size >= 0) {
+            left = i - window_size;
         }
-        new_xs.push_back(sumx / count);
-        new_ys.push_back(sumy / count);
-    }
-
-    // Обрабатываем последнюю точку
-    if (n > 1) {
-        new_xs.push_back((xs[n - 1] + xs[n - 2]) / 2.0);
-        new_ys.push_back((ys[n - 1] + ys[n - 2]) / 2.0);
+        else {
+            left = 0;
+        }
+        if (i + window_size < n) {
+            right = i + window_size;
+        }
+        else {
+            right = n - 1;
+        }
+        double sumx = 0.0, sumy = 0.0;
+        for (int j = left; j <= right; j++) {
+            sumx += xs[j];
+            sumy += ys[j];
+        }
+        new_xs.push_back(sumx / (right - left));
+        new_ys.push_back(sumy / (right - left));
     }
 
     return make_pair(new_xs, new_ys);
