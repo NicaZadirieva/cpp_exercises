@@ -82,6 +82,57 @@ pair<vector<double>, vector<double>> calculate_middle_points(const vector<double
     return make_pair(new_xs, new_ys);
 }
 
+pair<vector<double>, vector<double>> calculate_sorted_middle_points(const vector<double>& xs, const vector<double>& ys, int window_size = 3) {
+    if (xs.empty() || ys.empty() || xs.size() != ys.size()) {
+        return make_pair(vector<double>(), vector<double>());
+    }
+    // Создаем вектор пар
+    std::vector<std::pair<double, double>> pairs;
+    pairs.reserve(xs.size());
+
+    for (int i = 0; i < xs.size(); ++i) {
+        pairs.emplace_back(xs[i], ys[i]);
+    }
+    // Сортируем по первому элементу (x)
+    std::sort(pairs.begin(), pairs.end(),
+        [](const auto& a, const auto& b) { return a.first < b.first; });
+    int n = xs.size();
+    // Распаковываем
+    std::vector<double> x_sorted;
+    std::vector<double> y_sorted;
+    x_sorted.reserve(pairs.size());
+    y_sorted.reserve(pairs.size());
+    for (const auto& p : pairs) {
+        x_sorted.push_back(p.first);
+        y_sorted.push_back(p.second);
+    }
+
+    vector<double> new_ys = vector<double>();
+
+    for (int i = 0; i < n; i++) {
+        int left, right;
+        if (i - window_size >= 0) {
+            left = i - window_size;
+        }
+        else {
+            left = 0;
+        }
+        if (i + window_size < n) {
+            right = i + window_size;
+        }
+        else {
+            right = n - 1;
+        }
+        double sumx = 0.0, sumy = 0.0;
+        for (int j = left; j <= right; j++) {
+            sumy += y_sorted[j];
+        }
+        new_ys.push_back(sumy / (right - left));
+    }
+
+    return make_pair(x_sorted, new_ys);
+}
+
 int main() {
     // raw data
     ScientificFile file("data/raw.csv", ios::in);
@@ -111,9 +162,9 @@ int main() {
     SimpleGnuplot::plot_data(xs, dys, "dfx");
 
     // after deleting points
-    auto [temp_x_del_points, temp_y_del_points] = calculate_middle_points(xs, ys, 600);
-    auto [temp_x_del_points2, temp_y_del_points2] = calculate_middle_points(temp_x_del_points, temp_y_del_points, 600);
-    auto [x_del_points, y_del_points] = calculate_middle_points(temp_x_del_points2, temp_y_del_points2, 600);
+    auto [temp_x_del_points, temp_y_del_points] = calculate_sorted_middle_points(xs, ys, 500);
+    auto [temp_x_del_points2, temp_y_del_points2] = calculate_sorted_middle_points(temp_x_del_points, temp_y_del_points, 500);
+    auto [x_del_points, y_del_points] = calculate_sorted_middle_points(temp_x_del_points2, temp_y_del_points2, 500);
 
     SimpleGnuplot::plot_data(x_del_points, y_del_points, "delfx");
     vector<double> del_dys = calculate_derivative(x_del_points, y_del_points);
