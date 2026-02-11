@@ -241,12 +241,15 @@ int main() {
 
     // after deleting points
     auto [temp_x_del_points, temp_y_del_points] = calculate_sorted_middle_points(xs, ys, 600);
-    auto [temp_x_del_points2, temp_y_del_points2] = resample_uniform_x(temp_x_del_points, temp_y_del_points, 80);
+    auto [temp_x_del_points2, temp_y_del_points2] = calculate_sorted_middle_points(temp_x_del_points, temp_y_del_points, 600);
+    auto [temp_x_del_points3, temp_y_del_points3] = calculate_sorted_middle_points(temp_x_del_points2, temp_y_del_points2, 600);
+    auto [temp_x_del_points4, temp_y_del_points4] = calculate_sorted_middle_points(temp_x_del_points3, temp_y_del_points3, 600);
+    auto [temp_x_del_points5, temp_y_del_points5] = resample_uniform_x(temp_x_del_points4, temp_y_del_points4, 90);
 
 
-    SimpleGnuplot::plot_data(temp_x_del_points2, temp_y_del_points2, "delfx");
-    vector<double> del_dys = calculate_derivative(temp_x_del_points2, temp_y_del_points2);
-    SimpleGnuplot::plot_data(temp_x_del_points2, del_dys, "deldfx");
+    SimpleGnuplot::plot_data(temp_x_del_points5, temp_y_del_points5, "delfx");
+    vector<double> del_dys = calculate_derivative(temp_x_del_points5, temp_y_del_points5);
+    SimpleGnuplot::plot_data(temp_x_del_points5, del_dys, "deldfx");
     // processed file via origin
     vector<double> processed_xs = {};
     vector<double> processed_ys = {};
