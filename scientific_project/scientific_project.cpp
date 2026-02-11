@@ -3,10 +3,88 @@
 
 #include "scientific_project.h"
 #include "simple_gnuplot.h"
-
+#include <cassert>
 using namespace std;
 
 
+
+#include <vector>
+#include <cassert>
+#include <algorithm> // для lower_bound
+
+/**
+ * @brief Равномерная дискретизация ломаной по x с использованием промежуточных точек.
+ *
+ * Исходные точки (x, y) отсортированы по возрастанию x.
+ * Весь интервал [x[0], x.back()] делится на N равных частей.
+ * Для середины каждой части выполняется линейная интерполяция y
+ * между двумя ближайшими исходными точками.
+ *
+ * @tparam T Числовой тип (должен поддерживать арифметику)
+ * @param x Вектор x-координат, строго возрастающих
+ * @param y Вектор y-координат, соответствующий x
+ * @param N Требуемое количество точек (N >= 1)
+ * @return std::pair<std::vector<T>, std::vector<T>> (x_resampled, y_resampled)
+ */
+template<typename T>
+std::pair<std::vector<T>, std::vector<T>> resample_uniform_x(
+    const std::vector<T>& x,
+    const std::vector<T>& y,
+    std::size_t N
+) {
+    // --- Проверки ---
+    assert(x.size() == y.size() && "x and y must have the same length");
+    assert(x.size() >= 2 && "At least two points are needed for interpolation");
+    assert(std::is_sorted(x.begin(), x.end()) && "x must be sorted in ascending order");
+    assert(N >= 1 && "N must be at least 1");
+
+    T x0 = x.front();
+    T x1 = x.back();
+    T dx = (x1 - x0) / static_cast<T>(N);   // ширина одного интервала
+    T half_dx = dx / T(2);                 // половина интервала
+
+    std::vector<T> x_res, y_res;
+    x_res.reserve(N);
+    y_res.reserve(N);
+
+    for (std::size_t k = 0; k < N; ++k) {
+        // Середина k-го интервала
+        T x_mid = x0 + static_cast<T>(k) * dx + half_dx;
+
+        // Поиск отрезка [x[i], x[i+1]], содержащего x_mid
+        // Используем std::lower_bound: первый индекс, где x[i] >= x_mid
+        auto it = std::lower_bound(x.begin(), x.end(), x_mid);
+        std::size_t idx = it - x.begin();
+
+        if (idx == 0) {
+            // x_mid левее первой точки (возможно только при x_mid == x0)
+            // тогда берём y первой точки
+            x_res.push_back(x_mid);
+            y_res.push_back(y.front());
+        }
+        else if (idx >= x.size()) {
+            // x_mid правее последней точки (только при x_mid == x1)
+            x_res.push_back(x_mid);
+            y_res.push_back(y.back());
+        }
+        else {
+            // Интерполяция между точками idx-1 и idx
+            T x_left = x[idx - 1];
+            T x_right = x[idx];
+            T y_left = y[idx - 1];
+            T y_right = y[idx];
+
+            // Линейная интерполяция
+            T t = (x_mid - x_left) / (x_right - x_left);
+            T y_mid = y_left + t * (y_right - y_left);
+
+            x_res.push_back(x_mid);
+            y_res.push_back(y_mid);
+        }
+    }
+
+    return { std::move(x_res), std::move(y_res) };
+}
 vector<double> calculate_derivative(const vector<double>& xs, const vector<double>& ys) {
     size_t n = xs.size();
     vector<double> derivative(n);
@@ -162,13 +240,13 @@ int main() {
     SimpleGnuplot::plot_data(xs, dys, "dfx");
 
     // after deleting points
-    auto [temp_x_del_points, temp_y_del_points] = calculate_sorted_middle_points(xs, ys, 500);
-    auto [temp_x_del_points2, temp_y_del_points2] = calculate_sorted_middle_points(temp_x_del_points, temp_y_del_points, 500);
-    auto [x_del_points, y_del_points] = calculate_sorted_middle_points(temp_x_del_points2, temp_y_del_points2, 500);
+    auto [temp_x_del_points, temp_y_del_points] = calculate_sorted_middle_points(xs, ys, 600);
+    auto [temp_x_del_points2, temp_y_del_points2] = resample_uniform_x(temp_x_del_points, temp_y_del_points, 80);
 
-    SimpleGnuplot::plot_data(x_del_points, y_del_points, "delfx");
-    vector<double> del_dys = calculate_derivative(x_del_points, y_del_points);
-    SimpleGnuplot::plot_data(x_del_points, del_dys, "deldfx");
+
+    SimpleGnuplot::plot_data(temp_x_del_points2, temp_y_del_points2, "delfx");
+    vector<double> del_dys = calculate_derivative(temp_x_del_points2, temp_y_del_points2);
+    SimpleGnuplot::plot_data(temp_x_del_points2, del_dys, "deldfx");
     // processed file via origin
     vector<double> processed_xs = {};
     vector<double> processed_ys = {};
